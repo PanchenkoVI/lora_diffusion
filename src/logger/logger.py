@@ -25,7 +25,6 @@ def setup_logging(save_dir, log_config=None, default_level=logging.INFO, append=
     log_config = Path(log_config)
     if log_config.is_file():
         config = read_json(log_config)
-        # modify logging paths based on run config
         for _, handler in config["handlers"].items():
             if "filename" in handler:
                 handler["filename"] = str(save_dir / handler["filename"])

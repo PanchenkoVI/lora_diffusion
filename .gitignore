@@ -101,7 +101,7 @@ ENV/
 .mypy_cache/
 
 # input data, saved log, checkpoints, hydra outputs
-data/
+# data/
 input/
 saved/
 wandb/
@@ -112,3 +112,16 @@ outputs/
 .vscode/
 .idea/
 __MACOSX/
+
+# Ignore actual data, but keep DVC metadata
+src/data/my_object_512/
+!src/data/my_object_512.dvc
+
+# Фnd other files...
+.json
+.csv
+.h5
+.cbm
+.pth
+.xyz
+.onnx

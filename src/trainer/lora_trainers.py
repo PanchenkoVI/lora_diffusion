@@ -14,15 +14,6 @@ logger = logging.getLogger(__name__)
 
 
 class LoraTrainer(BaseTrainer):
-    """
-    LoraTrainer — расширение BaseTrainer для обучения LoRA на diffusion pipeline.
-    Реализовано:
-      - обновление pipeline для inference (SD/SDXL)
-      - сохранение чекпоинтов и lora-weights
-      - сохранение/логирование сгенерированных изображений
-      - унифицированная отправка метрик в ClearML и в TensorBoard-like writer
-    """
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.logger = getattr(self, "logger", logger)
@@ -70,12 +61,6 @@ class LoraTrainer(BaseTrainer):
         self.save_dir.mkdir(parents=True, exist_ok=True)
 
     def _report_scalar(self, title: str, series: str, value: float, iteration: int):
-        """
-        Унифицированная отправка скалярных метрик:
-          - ClearML: task.get_logger().report_scalar(...)
-          - TensorBoard-like writer: writer.add_scalar(...)
-          - fallback: writer.report_scalar(...) если доступно
-        """
         try:
             if self._clearml_task is not None:
                 try:
@@ -133,13 +118,6 @@ class LoraTrainer(BaseTrainer):
         return True
 
     def _gather_metrics_results(self) -> Dict[str, float]:
-        """
-        Собирает результаты из self.metrics.
-        Правила:
-         - если у метрики есть метод finalize()/compute()/get_result(), вызываем его;
-         - если metric_result (или metric._data) содержит числовые значения или списки — берем среднее;
-         - возвращаем словарь {metric_name: value, ...}
-        """
         results: Dict[str, float] = {}
         try:
             for metric in getattr(self, "metrics", []) or []:
@@ -171,8 +149,6 @@ class LoraTrainer(BaseTrainer):
                             metric_data = {getattr(metric, "name", "metric"): v}
                         except Exception:
                             metric_data = {}
-
-                # Нормализация значений metric_data -> числовые
                 for k, v in metric_data.items():
                     try:
                         if v is None:
@@ -215,11 +191,6 @@ class LoraTrainer(BaseTrainer):
             return False
 
     def _evaluation_epoch(self, epoch: int, part: str, dataloader) -> Dict[str, Any]:
-        """
-        Выполняем суперклассную валидацию, затем формируем/дополняем result
-        из self.metrics, если суперкласс не вернул метрики.
-        """
-
         self._current_epoch = epoch
         self._batch_counter = 0
         self._update_pipeline_with_current_weights(epoch)
@@ -660,12 +631,7 @@ class LoraTrainer(BaseTrainer):
         batch_id: int,
         tag: Optional[str] = None,
     ):
-        """
-        Универсальная отправка изображения в ClearML (upload_artifact + report_image/report_media)
-        и одновременное добавление в writer (если доступно).
-        """
         try:
-            # 1) ClearML upload & report
             if self._clearml_task is not None:
                 try:
                     art_name = tag or f"generated_epoch_{epoch}_batch_{batch_id}"
@@ -674,7 +640,6 @@ class LoraTrainer(BaseTrainer):
                         artifact_object=str(filepath),
                         metadata={"epoch": epoch, "batch_id": batch_id},
                     )
-                    # report_image preferred; fallback to report_media
                     try:
                         self._clearml_task.get_logger().report_image(
                             title="Generated Images",
@@ -695,15 +660,12 @@ class LoraTrainer(BaseTrainer):
                 except Exception as e:
                     self.logger.warning(f"ClearML upload/report failed: {e}")
 
-            # 2) TensorBoard-like writer
             if self.writer is not None and hasattr(self.writer, "add_image"):
                 try:
                     img_tensor = T.ToTensor()(img)  # CHW float [0,1]
                     step = int(epoch) if isinstance(epoch, int) else 0
                     tag_name = tag or f"Generated/epoch_{epoch}/batch_{batch_id}"
 
-                    # ClearML's writer (ClearMLLogger) implements add_image but does not accept dataformats kwarg.
-                    # Detect by class name fallback.
                     writer_cls_name = getattr(
                         self.writer, "__class__", type(self.writer)
                     ).__name__
@@ -748,10 +710,6 @@ class LoraTrainer(BaseTrainer):
         global_step: int = 0,
         writer_idx: int = 0,
     ):
-        """
-        Helper: добавляет изображение в writer (PIL или torch.Tensor).
-        Убирает dataformats для ClearML.
-        """
         if self.writer is None or not hasattr(self.writer, "add_image"):
             return
 
@@ -800,11 +758,6 @@ class LoraTrainer(BaseTrainer):
         part: str = "train",
         epoch: int = 0,
     ):
-        """
-        Логирование одного батча: generated + original images.
-        Работает и с PIL.Image и с torch.Tensor.
-        """
-
         try:
             # generated
             if "generated" in batch and batch["generated"]:

@@ -31,11 +31,20 @@ def cos_sim(arr1, arr2):
 
 class BaseTimer:
     def __init__(self):
-        self.start = torch.mps.Event(enable_timing=True)
-        self.end = torch.mps.Event(enable_timing=True)
+        if torch.backends.mps.is_available():
+            self.start = torch.mps.Event(enable_timing=True)
+            self.end = torch.mps.Event(enable_timing=True)
+        elif torch.cuda.is_available():
+            self.start = torch.cuda.Event(enable_timing=True)
+            self.end = torch.cuda.Event(enable_timing=True)
+
         self.start.record()
 
     def stop(self):
         self.end.record()
-        torch.mps.synchronize()
+
+        if torch.backends.mps.is_available():
+            torch.mps.synchronize()
+        elif torch.cuda.is_available():
+            torch.cuda.synchronize()
         return self.start.elapsed_time(self.end) / 1000

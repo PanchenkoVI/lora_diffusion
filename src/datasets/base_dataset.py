@@ -1,7 +1,6 @@
 import logging
 import random
 from typing import List
-
 from torch.utils.data import Dataset
 from PIL import Image
 

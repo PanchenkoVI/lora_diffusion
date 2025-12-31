@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 import random
 import secrets
 import string
@@ -142,7 +143,7 @@ def setup_saving_and_logging_inference(config):
         logger (Logger): logger that logs output.
     """
     save_dir = ROOT_PATH / config.inferencer.exp_save_dir
-    os.makedirs(save_dir, exist_ok=True)
+    Path(save_dir).mkdir(parents=True, exist_ok=True)
 
     setup_logging(save_dir, append=False)
     logger = logging.getLogger("train")

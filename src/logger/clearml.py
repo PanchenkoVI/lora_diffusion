@@ -40,7 +40,6 @@ class ClearMLWriter:
 
     def add_image(self, image_name, image):
         if self.logger:
-            # Конвертируем tensor в numpy для ClearML
             if hasattr(image, "detach"):
                 image = image.detach().cpu().numpy()
                 if len(image.shape) == 3 and image.shape[0] == 3:  # CHW -> HWC

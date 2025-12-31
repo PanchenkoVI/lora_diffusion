@@ -12,6 +12,7 @@ from src.trainer.base_trainer import BaseTrainer
 
 logger = logging.getLogger(__name__)
 
+
 class BaseInferencer(BaseTrainer):
     def __init__(
         self,
@@ -55,15 +56,15 @@ class BaseInferencer(BaseTrainer):
 
         with open(data_config_path, "r") as f:
             data_cfg = yaml.safe_load(f)
-        self.concept_dir = Path(data_cfg.get("root_dir", "./src/data/my_object_512"))
+        self.concept_dir = Path(
+            data_cfg.get("root_dir", "./src/data/my_object_512/my_object_512")
+        )
 
         self.concept_images = self._load_concept_images()
 
         self._fix_metric_devices()
 
     def _fix_metric_devices(self):
-        """Исправляет устройства для всех метрик"""
-
         for metric in self.metrics:
             try:
                 if hasattr(metric, "model"):
@@ -152,7 +153,7 @@ class BaseInferencer(BaseTrainer):
 
         val_args = getattr(self.config, "validation_args", {})
         num_images_per_prompt = getattr(val_args, "num_images_per_prompt", 1)
-        num_inference_steps = getattr(val_args, "num_inference_steps", 50)
+        num_inference_steps = getattr(val_args, "num_inference_steps", 10)
         guidance_scale = getattr(val_args, "guidance_scale", 7.5)
         height = getattr(val_args, "height", 512)
         width = getattr(val_args, "width", 512)
@@ -197,8 +198,6 @@ class BaseInferencer(BaseTrainer):
         return batch
 
     def _process_metrics_with_device_fix(self, batch, eval_metrics):
-        """Обрабатывает метрики с исправлением проблем устройств"""
-
         for metric in self.metrics:
             try:
                 metric_value = self._compute_metric_safe(metric, batch)
@@ -231,8 +230,6 @@ class BaseInferencer(BaseTrainer):
                 )
 
     def _compute_metric_safe(self, metric, batch):
-        """Безопасное вычисление метрики с обработкой устройств"""
-
         try:
             return metric(**batch)
         except RuntimeError as e:
@@ -242,8 +239,6 @@ class BaseInferencer(BaseTrainer):
                 raise e
 
     def _compute_metric_with_device_fix(self, metric, batch):
-        """Вычисление метрики с исправлением проблем устройств"""
-
         safe_batch = {}
 
         for key, value in batch.items():
@@ -303,9 +298,9 @@ class BaseInferencer(BaseTrainer):
         for root, dirs, files in os.walk(output_dir):
             for file in files:
                 if file.lower().endswith((".png", ".jpg", ".jpeg")):
-                    file_path = os.path.join(root, file)
+                    file_path = Path(root) / file
                     try:
-                        relative_dir = os.path.relpath(root, output_dir)
+                        relative_dir = Path(root).relative_to(output_dir)
                         artifact_name = f"epoch_{epoch}_{relative_dir}_{file}"
 
                         task.upload_artifact(
@@ -349,10 +344,6 @@ class LoraInferencer(BaseInferencer):
                 or checkpoint
             )
             missing, unexpected = self.model.load_state_dict(state_dict, strict=False)
-            # if missing:
-            #     self.logger.warning(f"Пропущено {len(missing)} ключей: {missing[:5]}")
-            # if unexpected:
-            #     self.logger.warning(f"Неожиданные ключи: {unexpected[:5]}")
             self._debug_after_loading()
             if not self.pipe_created:
                 self._create_pipeline()

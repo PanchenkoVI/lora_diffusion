@@ -1,0 +1,6 @@
+outs:
+- md5: 9fead0a612f4b8db8d88884ef0f0de8b.dir
+  size: 2678155
+  nfiles: 81
+  hash: md5
+  path: my_object_512

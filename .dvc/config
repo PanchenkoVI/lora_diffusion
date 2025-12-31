@@ -1,5 +1,4 @@
 [core]
-    remote = yandex
-
-['remote "yandex"']
-    url = yandex://<disk_id>/path/to/data
+    remote = local
+['remote "local"']
+    url = ../dvc_storage

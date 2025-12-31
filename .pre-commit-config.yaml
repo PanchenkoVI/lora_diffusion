@@ -5,7 +5,9 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: end-of-file-fixer
+        exclude: ^dvc_storage/
       - id: trailing-whitespace
+        exclude: ^dvc_storage/
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.1.15
@@ -19,4 +21,3 @@ repos:
     hooks:
       - id: prettier
         files: "\\.(json|yaml|yml|md)$"
-

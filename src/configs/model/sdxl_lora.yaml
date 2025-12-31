@@ -16,5 +16,4 @@ lora_modules:
   - to_out.0
 init_lora_weights: gaussian
 placeholder_token: ${data_source.placeholder_token}
-# initializer_token: ${data_source.placeholder_token}
 initializer_token: null

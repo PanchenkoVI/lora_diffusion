@@ -7,4 +7,4 @@ val_ratio: 0.2
 random_seed: 42
 
 size_image: 512
-root_dir: "./src/data/my_object_512"
+root_dir: "./src/data/my_object_512/my_object_512"

@@ -31,7 +31,7 @@ inference_metrics: ["text_sim", "dino"]
 validation_args:
   negative_prompt: "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, signature, watermark, blurry, deformed, ugly"
   num_images_per_prompt: 10
-  num_inference_steps: 50
+  num_inference_steps: 10
   guidance_scale: 7.5
   height: ${data_source.size_image}
   width: ${data_source.size_image}
