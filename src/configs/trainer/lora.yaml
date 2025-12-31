@@ -1,0 +1,12 @@
+_target_: src.trainer.lora_trainers.LoraTrainer
+device: mps
+cfg_step: 10
+log_step: 50
+n_epochs: 4
+epoch_len: 200
+resume_from: null # null or path to the checkpoint dir with *.pth and config.yaml
+from_pretrained: null
+save_period: 10 # checkpoint each save_period epochs in addition to the best epoch
+save_dir: "saved"
+seed: 0
+max_grad_norm: null

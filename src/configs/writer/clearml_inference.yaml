@@ -1,0 +1,7 @@
+_target_: src.logger.clearml.ClearMLWriter
+
+project_name: "lora_inference"
+task_name: "inference_${project_config.run_name}"
+tags: ["inference", "lora", "generation"]
+reuse_last_task_id: false
+id_length: 8

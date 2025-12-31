@@ -1,0 +1,25 @@
+train:
+  custom_dreambooth:
+    _target_: src.datasets.custom_dreambooth.CustomDreamBoothDataset
+    data_path: ${data_source.root_dir}
+    captions_file: ${data_source.root_dir}/${data_source.captions_file}
+    placeholder_token: ${data_source.placeholder_token}
+    class_name: ${data_source.class_name}
+    train_ratio: ${data_source.train_ratio}
+    val_ratio: ${data_source.val_ratio}
+    random_seed: ${data_source.random_seed}
+    mode: "train"
+    instance_transforms: null
+
+val:
+  custom_dreambooth_val:
+    _target_: src.datasets.custom_dreambooth.CustomDreamBoothDataset
+    data_path: ${data_source.root_dir}
+    captions_file: ${data_source.root_dir}/${data_source.captions_file}
+    placeholder_token: ${data_source.placeholder_token}
+    class_name: ${data_source.class_name}
+    train_ratio: ${data_source.train_ratio}
+    val_ratio: ${data_source.val_ratio}
+    random_seed: ${data_source.random_seed}
+    mode: "val"
+    instance_transforms: null

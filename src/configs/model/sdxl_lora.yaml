@@ -1,0 +1,20 @@
+_target_: src.model.sdxl.lora.DiffusionLora
+
+pretrained_model_name_or_path: "runwayml/stable-diffusion-v1-5"
+
+weight_dtype: auto
+target_size: ${data_source.size_image}
+rank: 16
+lora_alpha: 16
+lora_dropout: 0.05
+use_text_encoder_lora: true
+use_unet_lora: true
+lora_modules:
+  - to_q
+  - to_k
+  - to_v
+  - to_out.0
+init_lora_weights: gaussian
+placeholder_token: ${data_source.placeholder_token}
+# initializer_token: ${data_source.placeholder_token}
+initializer_token: null

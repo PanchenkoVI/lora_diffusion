@@ -1,0 +1,38 @@
+defaults:
+  - inferencer: lora
+  - model: sdxl_lora
+  # - writer: console
+  - writer: clearml_inference
+  - transforms: only_instance
+  - pipeline: sdxl15
+  - metrics: all_metrics
+  - datasets: all_datasets
+  - dataloaders: all_dataloaders
+  - data_source: main_source
+  - _self_
+
+project_config:
+  project_name: "lora_inference"
+  run_name: "experiment_1"
+
+trainer:
+  device: ${inferencer.device}
+
+epochs_to_infer: ${inferencer.epochs_to_infer}
+ckpt_dir: ${inferencer.ckpt_dir}
+exp_save_dir: ${inferencer.exp_save_dir}
+
+train_dataset_name: "custom_dreambooth"
+val_datasets_names: ["custom_dreambooth_val"]
+
+inference_metrics: ["text_sim", "dino"]
+# inference_metrics: ["clip_ts", "id_sim"]    # для лиц
+
+validation_args:
+  negative_prompt: "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, signature, watermark, blurry, deformed, ugly"
+  num_images_per_prompt: 10
+  num_inference_steps: 50
+  guidance_scale: 7.5
+  height: ${data_source.size_image}
+  width: ${data_source.size_image}
+  seed: 42

@@ -1,0 +1,53 @@
+defaults:
+  - trainer: lora_step_2
+  - model: sdxl_lora
+  # - writer: console
+  - writer: clearml
+  - transforms: only_instance
+  - lr_scheduler: constant
+  - pipeline: sdxl15
+  - metrics: all_metrics
+  - datasets: all_datasets_step_2
+  - dataloaders: all_dataloaders
+  - data_source: main_source_step_2
+  - _self_
+
+project_config:
+  project_name: "lora_train"
+  run_name: "experiment_1"
+
+optimizer:
+  _convert_: partial
+  _target_: torch.optim.AdamW
+  lr: 5e-5
+  weight_decay: 0.01
+
+loss_function:
+  _target_: src.loss.diffusion_loss.DiffusionLoss
+
+lr_for_unet: 5e-5
+lr_for_text_encoder: 5e-5
+
+lr_scheduler:
+  _target_: torch.optim.lr_scheduler.ConstantLR
+  factor: 1.0
+  total_iters: 1
+
+train_dataset_name: "custom_dreambooth"
+val_datasets_names: ["custom_dreambooth_val"]
+
+inference_metrics: ["text_sim", "dino"] # для предметов
+# inference_metrics: ["clip_ts", "id_sim"]    # для лиц
+
+validation_args:
+  negative_prompt: "lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, signature, watermark, blurry, deformed, ugly, bad anatomy, disfigured, malformed, mutated"
+  num_images_per_prompt: 5
+  num_inference_steps: 50
+  guidance_scale: 5
+  height: ${data_source.size_image}
+  width: ${data_source.size_image}
+  final_generation: True
+  seed: 41
+  val_general_images: 2
+  log_image_step: 20 # частота логирования изображений
+  log_text_step: 10 # частота логирования текстовых промптов

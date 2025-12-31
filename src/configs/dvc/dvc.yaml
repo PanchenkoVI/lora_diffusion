@@ -1,0 +1,20 @@
+stages:
+  prepare:
+    cmd: python src/data/prepare_data.py
+    deps:
+      - src/data/prepare_data.py
+    outs:
+      - src/data/my_object_512
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - src/data/my_object_512
+      - src/train.py
+      - src/model.py
+
+  infer:
+    cmd: python src/infer.py
+    deps:
+      - src/data/my_object_512.dvc
+      - src/infer.py

@@ -1,0 +1,6 @@
+_target_: src.logger.wandb.WandBWriter
+project_name: ${project_config.project_name}
+entity: null
+run_id: null
+run_name: ${project_config.run_name}
+mode: "offline"

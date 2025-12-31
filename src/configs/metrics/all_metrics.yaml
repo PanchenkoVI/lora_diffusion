@@ -1,0 +1,24 @@
+_target_: src.metrics.tracker.MetricTracker
+
+text_sim:
+  _target_: src.metrics.text_sim.TextSimMetric
+  name: "text_sim"
+  model_name: "ViT-B/32"
+  device: ${trainer.device}
+
+dino:
+  _target_: src.metrics.dino.DinoMetric
+  name: "dino"
+  model_name: "dinov2_vitb14"
+  to_norm: true
+  device: ${trainer.device}
+
+idsim_max:
+  _target_: src.metrics.id_sim_metric.IDSimMax
+  name: "idsim_max"
+  device: ${trainer.device}
+
+idsim_best:
+  _target_: src.metrics.id_sim_metric.IDSimBest
+  name: "idsim_best"
+  device: ${trainer.device}

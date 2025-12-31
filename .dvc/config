@@ -1,0 +1,5 @@
+[core]
+    remote = yandex
+
+['remote "yandex"']
+    url = yandex://<disk_id>/path/to/data

@@ -1,0 +1,10 @@
+captions_file: "captions.txt"
+placeholder_token: "sksToy"
+initializer_token: "toy"
+class_name: "toy"
+train_ratio: 0.8
+val_ratio: 0.2
+random_seed: 42
+
+size_image: 512
+root_dir: "./src/data/my_object_512"

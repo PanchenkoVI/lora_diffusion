@@ -1,0 +1,12 @@
+_target_: src.trainer.lora_trainers.LoraTrainer
+device: mps
+cfg_step: 10
+log_step: 50
+n_epochs: 8
+epoch_len: 200
+resume_from: null
+from_pretrained: "/content/saved/default_run/lora_weights_epoch3.pth"
+save_period: 1
+save_dir: "saved/continued_run"
+seed: 0
+max_grad_norm: 1.0
